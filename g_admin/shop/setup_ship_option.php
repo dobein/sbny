@@ -1,0 +1,80 @@
+<?
+	// 기본 설정 파일모음
+	include "../../include/inc_base.php";
+
+
+	/**
+	* 접근권한 설정
+	**/
+	include "../../include/inc_admin_session.php";
+
+
+	$tableName = "chan_shop_shipping";
+
+	if($mode == "save")
+	{
+
+		$qry1 = "insert into chan_shop_shipping_option values ('','$no','$ship_title','$ship_weight_min','$ship_weight_max','$ship_price','YES')";
+		$rst1 = mysql_query($qry1,$dbConn);
+
+		Misc::jvAlert("Completed!","location.replace('setup_ship.php?area=$area')");
+		exit;
+	}
+
+	$qry1 = "select * from $tableName where seq_no = '$no'";
+	$rst1 = mysql_query($qry1,$dbConn);
+	$row1 = mysql_fetch_assoc($rst1);
+
+
+	include _BASE_DIR . "/g_admin/inc_top.php";
+?>
+<table width=100% align=center border=0 cellspacing=0>
+	<tr>
+		<td height=28>&nbsp;&nbsp;>> Shipping Option Manager</td>
+	</tr>
+	<tr><td height=1 bgcolor='#008080'></td></tr>
+</table>
+<br>
+<table width=100% align=center border=0 cellspacing=1 bgcolor='#a9a9a9'>
+<script>
+	function chk(tf){
+		if(!tf.shipping_company.value)
+			{
+			alert('배송 회사명을 넣어주세요!');
+			tf.shipping_company.focus();
+			return false;
+			}
+		return true;
+	}
+</script>
+<form action=<?= $PHP_SELF ?> method=post onSubmit="return chk(this)">
+<input type=hidden name=mode value="save">
+<input type=hidden name=no value="<?= $no ?>">
+<input type=hidden name=area value="<?= $area ?>">
+	<tr bgcolor=#eee8aa height=30>
+		<td colspan=2>&nbsp;&nbsp;<b>Company (<?= $row1[name]; ?>) Option Add</b></td>
+	</tr>
+	<tr bgcolor='#FFFFFF' height=30>
+		<td width=200 height=28 align=center>Name</td>
+		<td>&nbsp;&nbsp;<?= $row1[name]; ?></td>
+	</tr>
+	<tr bgcolor='#FFFFFF' height=30>
+		<td width=200 height=28 align=center>Opt Title</td>
+		<td>&nbsp;&nbsp;<input type=text name=ship_title size=40></td>
+	</tr>
+	<tr bgcolor='#FFFFFF' height=30>
+		<td width=200 height=28 align=center>Weight</td>
+		<td>&nbsp;&nbsp;<input type=text name=ship_weight_min size=4> ~ <input type=text name=ship_weight_max size=4> lbs</td>
+	</tr>
+	<tr bgcolor='#FFFFFF' height=30>
+		<td width=200 height=28 align=center>Price</td>
+		<td>&nbsp;&nbsp;<input type=text name=ship_price size=4> USD</td>
+	</tr>
+	<tr bgcolor='#FFFFFF'>
+		<td colspan=2 align=center height=45><input type=submit value="   Option Add   "></td>
+	</tr></form>
+</table>
+
+<?
+	include _BASE_DIR . "/g_admin/inc_bottom.php";
+?>

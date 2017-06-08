@@ -1,0 +1,117 @@
+/*Default Set*/
+body {
+	font-size:12px;
+	font-family: tahoma, verdana, Arial, 굴림, 돋움, Helvetica, geneva,sans-serif;
+	margin:0;
+	padding:0;
+	color:#333;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+table { border-collapse: collapse;}
+td { padding: 0; margin:0 ; line-height:16px; color:#333; font-size:12px ; font-family: verdana, tahoma, Arial, 굴림, 돋움, Helvetica, geneva, sans-serif ; WORD-BREAK: break-all;}
+img { border: none;}
+input,select,textarea  { font-family: verdana, Arial, tahoma, Helvetica, geneva,sans-serif ; color:#333;}
+select { font-size:12px; margin-top:1px;}
+input.txt { border:#cccccc 1px solid; height:18px; padding-left:2px; padding-top:2px;}
+textarea.txt { border:#cccccc 1px solid;}
+div { margin:0; padding:0;}
+
+.b {font-weight:bold; }
+.product_font { font-size:12pt;font-weight:bold; font-family: 'Carrois Gothic', sans-serif;}
+.top1 {	color:#818181; font-size: 11px; font-family: 돋움;	line-height: 14px;}
+.top_name {	color:#ff6000; font-weight:bold;font-family: 돋움;font-size: 11px;	line-height: 16px;}
+
+.brand { color:#818181; font-size: 11px; font-weight:bold; font-family: 돋움;	line-height: 14px;}
+.product { font-size:11px; font-weight:bold;}
+.orange { color:#f26d00;}
+.blue { color:#00a2ff;}
+.raw01 { font-weight:bold; letter-spacing:-1px;}
+.raw02 { font-size:11px; font-weight:bold; letter-spacing:-1px; line-height:14px;}
+
+.tl { font-size: 15px; color:#ffffff; font-weight:bold; }
+.line { font-family: 돋움; text-decoration:line-through}
+.home { color:#818181; font-size: 10px; line-height: 14px;}
+.home span{ color: #003399;}
+.blue_14 { font-size: 14px; color:#003399; font-weight:bold; line-height: 22px; font-family: 돋움;}
+.blue_18 { font-size: 18px; color:#003399; font-weight:bold; line-height: 22px; font-family: 돋움;}
+
+.submenu { color:#192345; font-family: 돋움; font-size: 11px; line-height: 16px; padding-left:10px; letter-spacing:-1px; font-weight:bold;}
+.submenu A:link {	text-decoration:none;	color: #838aa2;} 
+.submenu A:visited {	text-decoration:none;	color: #838aa2;} 
+.submenu A:active {	text-decoration:none;	color: #192345;}
+.submenu A:hover {	text-decoration:none;	color: #192345; letter-spacing:-1px;}
+
+
+
+.footermenu { color:#ffffff; font-size: 11px; line-height: 18px; font-weight:bold; font-style:italic;}
+.footermenu A:link {	text-decoration:none;	color: #fff;} 
+.footermenu A:visited {	text-decoration:none;	color: #fff;} 
+.footermenu A:active {	text-decoration:underline;	color: #fff;}
+.footermenu A:hover {	text-decoration:underline;	color: #fff;}
+
+.footer { color:#ffffff; font-size: 11px; line-height: 18px; font-weight:bold;}
+
+.white { color:#ffffff;	font-size: 11px; line-height: 16px;}
+
+.white_b { color:#ffffff;font-weight:bold;	font-size: 11px;	line-height: 16px;}
+.white_b A:link {	text-decoration:none;	color: #ffffff;} 
+.white_b A:visited {	text-decoration:none;	color: #ffffff;} 
+.white_b A:active {	text-decoration:underline;	color: #ffffff;}
+.white_b A:hover {	text-decoration:underline;	color: #ffffff;}
+
+
+A:link {
+	text-decoration:none;
+	color: #333333;
+} A:visited {
+	text-decoration:none;
+	color: #333333;
+} A:active {
+	text-decoration:underline;
+	color: #333333;
+} A:hover {
+	text-decoration:underline;
+	color: #333333;
+}
+
+
+#submenuDiv1
+{
+	background-color:#FFFFFF;
+	position:absolute;
+	left:50%;
+	margin-left:0px;
+	bottom: 0;
+	top:80px;
+	width:370px;
+	z-index:1;
+	border-top:#d8dbe3 1px solid;
+	border-bottom:#d8dbe3 1px solid;
+	height: 25px;
+
+}
+
+.title_font {
+	height:25px;
+	color: #3e3e3e;
+	padding: 0px 2px;
+	font-weight:bold;
+	font: 12px  "Arial", Times, serif;
+	border:1px;
+	border-bottom:thin #cccccc;
+	border-style:solid;
+}
+
+.summit_btn {
+
+	background:#262626;
+	height:20px;
+	color: #deb454;
+	border:none;
+	padding: 0px 2px;
+	font: 11px  "Arial", Times, serif;
+
+}

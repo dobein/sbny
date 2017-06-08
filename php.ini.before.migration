@@ -1,0 +1,14 @@
+allow_url_fopen = off;
+disable_functions=popen,exec,system,passthru,proc_open,shell_exec,show_source,dir,chmod,mkdir,rmdir,phpinfo
+<Limit GET HEAD POST>
+order allow,deny
+deny from 118.70.13.17
+deny from 118.70.13
+deny from 37.130
+deny from 212.83
+deny from 93.174
+deny from 89.163
+deny from 46.182
+deny from 185.25
+allow from all
+</LIMIT>

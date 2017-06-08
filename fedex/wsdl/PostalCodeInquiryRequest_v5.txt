@@ -1,0 +1,27 @@
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://fedex.com/ws/packagemovementinformationservice/v5">
+<SOAP-ENV:Body>
+<PostalCodeInquiryRequest>
+<WebAuthenticationDetail>
+<UserCredential>
+<Key></Key>
+<Password></Password>
+</UserCredential>
+</WebAuthenticationDetail>
+<ClientDetail>
+<AccountNumber></AccountNumber>
+<MeterNumber></MeterNumber>
+</ClientDetail>
+<TransactionDetail>
+<CustomerTransactionId>WSVC_Postalcode</CustomerTransactionId>
+</TransactionDetail>
+<Version>
+<ServiceId>pmis</ServiceId>
+<Major>5</Major>
+<Intermediate>0</Intermediate>
+<Minor>0</Minor>
+</Version>
+<PostalCode>73301</PostalCode>
+<CountryCode>US</CountryCode>
+</PostalCodeInquiryRequest>
+</SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

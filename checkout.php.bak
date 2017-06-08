@@ -1,0 +1,685 @@
+<?
+	include "./include/inc_base.php";
+
+
+	if (!$_SESSION['member_id'])
+	{
+	   $D_URL = _WEB_BASE_DIR ."/member/login.php";
+
+	   $URL = _WEB_BASE_DIR ."/shopping/checkout.php";
+	   $URL = urlencode($URL); 
+
+	   header("location: $D_URL?Mode=buy&goUrl=$URL");
+	}
+
+
+	$ip_address = explode(".",$REMOTE_ADDR);
+
+
+	if(isset($_SESSION['temp_orderNum']))
+	{
+		// 이 페이지로 오면.. 기존세션 다 지우기
+		$d_qry1 = "delete from chan_shop_orderinfo where temp_order = '".$_SESSION['temp_orderNum']."'";
+		$d_rst1 = mysql_query($d_qry1);
+
+		$d_qry2 = "delete from chan_shop_orderproduct where temp_order = '".$_SESSION['temp_orderNum']."'";
+		$d_rst2 = mysql_query($d_qry2);
+
+		unset($_SESSION['temp_orderNum']); 
+	}
+
+
+
+
+	/**
+	* @ 오더 폼 저장하기
+	*/
+	if($_POST['mode'] == "save")
+	{
+
+
+		if(!isset($_SESSION['temp_orderNum']))
+		{
+			/**
+			* Temp order number 만들기
+			*/
+			$keychars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+			$length = 5;
+
+			// RANDOM KEY GENERATOR
+			$randkey = "";
+			$max=strlen($keychars)-1;
+			for ($i=0;$i<=$length;$i++) {
+			  $randkey .= substr($keychars, rand(0, $max), 1);
+			}
+
+			// item code 만들기
+			$temp_orderNum = $randkey.date("d").date("m").date("s").date("y")."K".date("h").date("i");
+
+			// 오더번호 세션굽기
+			$_SESSION['temp_orderNum'] = $temp_orderNum;
+		}
+
+
+
+
+
+		/**
+		* 오더 정보 입력하기
+		*/	
+
+		$bill_cellphone = mysql_real_escape_string(htmlentities($_POST['bill_cellphone']));
+		$ship_cellphone = mysql_real_escape_string(htmlentities($_POST['ship_cellphone']));
+
+
+
+		$bill_first_name = $_POST['bill_first_name'];
+		$bill_last_name = $_POST['bill_last_name'];
+		$bill_email = mysql_real_escape_string(htmlentities($_POST['bill_email']));
+		$bill_country = mysql_real_escape_string(htmlentities($_POST['bill_country']));
+		$bill_address1 = mysql_real_escape_string(htmlentities($_POST['bill_address1']));
+		$bill_address2 = mysql_real_escape_string(htmlentities($_POST['bill_address2']));
+		$bill_city = mysql_real_escape_string(htmlentities($_POST['bill_city']));
+		$bill_state = mysql_real_escape_string(htmlentities($_POST['bill_state']));
+		$bill_zipcode = mysql_real_escape_string(htmlentities($_POST['bill_zipcode']));
+
+		$ship_first_name = $_POST['ship_first_name'];
+		$ship_last_name = $_POST['ship_last_name'];
+		$ship_email = mysql_real_escape_string(htmlentities($_POST['ship_email']));
+		$ship_country = mysql_real_escape_string(htmlentities($_POST['ship_country']));
+		$ship_address1 = mysql_real_escape_string(htmlentities($_POST['ship_address1']));
+		$ship_address2 = mysql_real_escape_string(htmlentities($_POST['ship_address2']));
+		$ship_city = mysql_real_escape_string(htmlentities($_POST['ship_city']));
+		$ship_state = mysql_real_escape_string(htmlentities($_POST['ship_state']));
+		$ship_zipcode = mysql_real_escape_string(htmlentities($_POST['ship_zipcode']));
+
+
+
+
+		// 회원정보를 업데이트한다.
+		$member_qry1 = "update chan_shop_member address1 = '$bill_address1', address2 = '$bill_address2', city = '$bill_city', state = '$bill_state', zipcode = '$bill_zipcode', country = '$bill_country' where member_id = '".$_SESSION['member_id']."'";
+		$member_rst1 = mysql_query($member_qry1,$dbConn);
+
+
+		/**
+		* @ 결제 상태 : 
+		* @ 1:진행중 
+		* @ 2:신용카드 결제완료 
+		* @ 3:체크 결제신청 
+		* @ 4:체크 결제완료 
+		* @ 5:머니오더 결제신청
+		* @ 6:머니오더 결제완료
+		*/
+		$pay_status = "1";
+
+
+		/**
+		* @ 주문 상태 1:주문중 2: 주문완료 3:배송준비중 4:배송완료 5:오더완료 6:오더취소 7:환불/반품 
+		* @ Step0 : Your order ing...
+		* @ Step1 : Your order has been successfully submitted. Your credit/debit card has not yet been charged.
+		* @ Step2 : Your credit/debit card has been successfully charged. Your order contents will soon be packaged and sealed.
+		* @ Step3 : Your order has shipped.
+		* @ Step4 : Your order is cancelled. Void orders are null and cannot be re-processed. If you need to re-order as a result, please do so on our website. If you have any questions or concerns, please contact us for help.
+		*/
+		$order_status = "1";
+
+
+		
+
+		// 주문액 : $last_amt
+		$c_qry1 = "select item_code,item_qty from chan_shop_cart where user_id = '".$_SESSION['member_id']."' && domain = '".$domain."'";
+		$c_rst1 = mysql_query($c_qry1,$dbConn);
+
+		$sub_order_price = 0;
+
+		while($c_row1 = mysql_fetch_assoc($c_rst1)){
+
+			$item_info = get_iteminfo($c_row1[item_code]);
+
+
+			
+		}
+	
+
+			/**
+			* 오더 상품정보 입력하기
+			*/
+			$qry2 = "select * from chan_shop_cart where user_id = '".$_SESSION['member_id']."' && domain = '".$domain."' order by seq_no asc";
+			$rst2 = mysql_query($qry2,$dbConn);
+
+			while($row2 = mysql_fetch_assoc($rst2)){
+
+
+				$item_info = get_iteminfo($row2[item_code]);
+
+			
+				// 상품 정보 넣기
+				$qry3 = "insert into chan_shop_orderproduct (temp_order,
+																				item_code,
+																				item_title,
+																				item_qty,
+																				item_sale) values ('".$_SESSION['temp_orderNum']."',
+																											'$row2[item_code]',
+																											'$item_info[item_title]',
+																											'$row2[item_qty]',
+																											'$item_info[item_price1]')";
+
+				$rst3 = mysql_query($qry3,$dbConn);
+
+				$sub_order_price = $sub_order_price + ($item_info[item_price1]*$row2[item_qty]);
+
+			}
+	
+
+			if($rst3)
+			{
+				$qry1 = "insert into chan_shop_orderinfo (domain,
+																			user_id,
+																			temp_order,
+																			bill_email,
+																			bill_cellphone,
+																			bill_first_name,
+																			bill_last_name,
+																			bill_country,
+																			bill_address1,
+																			bill_address2,
+																			bill_city,
+																			bill_state,
+																			bill_zipcode,
+																			ship_first_name,
+																			ship_last_name,
+																			ship_cellphone,
+																			ship_country,
+																			ship_address1,
+																			ship_address2,
+																			ship_city,
+																			ship_state,
+																			ship_zipcode,
+																			order_price,
+																			pay_status,
+																			order_status,
+																			order_date) values ('".$domain."',
+																										'".$_SESSION['member_id']."',
+																										'".$_SESSION['temp_orderNum']."',
+																										'".$bill_email."',
+																										'".$bill_cellphone."',
+																										'".$bill_first_name."',
+																										'".$bill_last_name."',
+																										'".$bill_country."',
+																										'".$bill_address1."',
+																										'".$bill_address2."',
+																										'".$bill_city."',
+																										'".$bill_state."',
+																										'".$bill_zipcode."',
+																										'".$ship_first_name."',
+																										'".$ship_last_name."',
+																										'".$ship_cellphone."',
+																										'".$ship_country."',
+																										'".$ship_address1."',
+																										'".$ship_address2."',
+																										'".$ship_city."',
+																										'".$ship_state."',
+																										'".$ship_zipcode."',
+																										'$sub_order_price',
+																										'$pay_status',
+																										'$order_status',
+																										now())";
+
+
+				$rst1 = mysql_query($qry1,$dbConn);
+			}
+
+
+
+		if($rst1)
+		{
+
+			// 다음에서 결제방법에 대한 계산을 한다.
+			echo "<meta http-equiv='refresh' content='0; url=./checkout_shipping.php'>";
+			exit;
+		}
+		else
+		{
+			Misc::jvAlert("Occur Error! please, Retry!","history.go(-1)");
+			exit;
+		}
+
+	}
+
+
+	$user_dbinfo = getinfo_dbMember($_SESSION['member_id']);
+
+
+
+	/**
+	* @ 이전 주문기록에서 검색하기
+	*/
+	$pre_orderinfo = check_oldhistory();
+	
+	// 주문자 정보
+	$pre_ship_info = unserialize($pre_orderinfo[order_info]);
+
+	// 폰 넘버
+	$pre_bill_phone = explode("-",$pre_ship_info[bill_phone]);
+	$pre_ship_phone = explode("-",$pre_ship_info[ship_phone]);
+
+
+	include _BASE_DIR ."/include/inc_top.php";
+?>
+<div id="maincontainer">
+  <section id="product">
+    <div class="container">
+    <!--  breadcrumb -->  
+      <ul class="breadcrumb">
+        <li>
+          <a href="#">Home</a>
+          <span class="divider">/</span>
+        </li>
+        <li class="active">Checkout</li>
+      </ul>
+      <div class="row">        
+        <!-- Account Login-->
+        <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+        <h2 class="heading1"><span class="maintext">Checkout</span></h2>
+
+			  <script>
+				var same_ad = 1;
+
+				function same_address(tf){
+					
+					//alert(document.order.orAddress.value);
+
+					if(same_ad == '1')
+					{
+						if(tf == 'YES')
+						{
+							document.order.ship_first_name.value = document.order.bill_first_name.value;
+							document.order.ship_last_name.value = document.order.bill_last_name.value;
+
+							document.order.ship_country.value = document.order.bill_country.value;
+							document.order.ship_address1.value = document.order.bill_address1.value;
+							document.order.ship_address2.value = document.order.bill_address2.value;
+							document.order.ship_city.value = document.order.bill_city.value;
+							document.order.ship_state.value = document.order.bill_state.value;
+							document.order.ship_zipcode.value = document.order.bill_zipcode.value;
+							document.order.ship_ext.value = document.order.bill_ext.value;
+
+							same_ad = 2;
+						}
+					}
+					else
+					{
+							document.order.ship_first_name.value = '';
+							document.order.ship_last_name.value = '';
+
+							document.order.ship_country.value = 'US';
+							document.order.ship_address1.value = '';
+							document.order.ship_address2.value = '';
+							document.order.ship_city.value = '';
+							document.order.ship_state.value = '';
+							document.order.ship_zipcode.value = '';
+							document.order.ship_ext.value = '';
+
+							same_ad = 1;
+					}
+
+				}
+
+				function chk(tf){
+
+					if(!tf.bill_email.value)
+					{
+						alert('Enter your email address!');
+						tf.bill_email.focus();
+						return false;
+					}
+					if(!tf.bill_cellphone.value)
+					{
+						alert('Enter your phone number!');
+						tf.bill_cellphone.focus();
+						return false;
+					}
+
+
+					if(!tf.bill_first_name.value)
+					{
+						alert('Enter your first name!');
+						tf.bill_first_name.focus();
+						return false;
+					}
+					if(!tf.bill_last_name.value)
+					{
+						alert('Enter your first name!');
+						tf.bill_last_name.focus();
+						return false;
+					}
+
+					if(!tf.bill_address1.value)
+					{
+						alert('Enter your address!');
+						tf.bill_address1.focus();
+						return false;
+					}
+					if(!tf.bill_zipcode.value)
+					{
+						alert('Enter your zipcode!');
+						tf.bill_zipcode.focus();
+						return false;
+					}
+
+
+
+					if(!tf.ship_first_name.value)
+					{
+						alert('Enter your first name!');
+						tf.ship_first_name.focus();
+						return false;
+					}
+					if(!tf.ship_last_name.value)
+					{
+						alert('Enter your first name!');
+						tf.ship_last_name.focus();
+						return false;
+					}
+					if(!tf.ship_cellphone.value)
+					{
+						alert('Enter your telephone number!');
+						tf.ship_cellphone.focus();
+						return false;
+					}
+					if(!tf.ship_email.value)
+					{
+						alert('Enter your email address!');
+						tf.ship_email.focus();
+						return false;
+					}
+					if(!tf.ship_address1.value)
+					{
+						alert('Enter your address!');
+						tf.ship_address1.focus();
+						return false;
+					}
+
+					if(!tf.ship_zipcode.value)
+					{
+						alert('Enter your zipcode!');
+						tf.ship_zipcode.focus();
+						return false;
+					}
+				return true;
+				}
+		</script>
+		<form class="form-horizontal form-custom" name=order action=<?= _WEB_BASE_DIR ?>/checkout.php method=post onSubmit="return chk(this)">
+		<input type=hidden name=mode value="save">
+        <div class="checkoutsteptitle">Step 1: Billing Details </div>
+        <div class="checkoutstep">
+          <div class="row">
+
+              <fieldset>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                  <div class="form-group">
+                    <label class="control-label" >First Name<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Last Name<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >E-Mail<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Telephone<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Fax</label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Telephone<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Password<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Password Confirm<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                  <div class="form-group">
+                    <label class="control-label" >Company</label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Company Id</label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Address 1<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Address 2</label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >City<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Post Code<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Country<span class="red">*</span></label>
+                    <div class="controls">
+                      <select >
+                        <option>Please Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Region / State<span class="red">*</span></label>
+                    <div class="controls">
+                      <select >
+                        <option>Please Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+
+          </div>
+           </div>
+        <div class="checkoutsteptitle">Step 2: Delivery Details </div>
+        <div class="checkoutstep">
+          <div class="row">
+
+              <fieldset>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                  <div class="form-group">
+                    <label class="control-label" >First Name<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Last Name<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >E-Mail<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Telephone<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Fax</label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Telephone<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Password<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Password Confirm<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+                  <div class="form-group">
+                    <label class="control-label" >Company</label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Company Id</label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Address 1<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Address 2</label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >City<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Post Code<span class="red">*</span></label>
+                    <div class="controls">
+                      <input type="text" class=""  value="">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Country<span class="red">*</span></label>
+                    <div class="controls">
+                      <select >
+                        <option>Please Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label" >Region / State<span class="red">*</span></label>
+                    <div class="controls">
+                      <select >
+                        <option>Please Select</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+            
+          </div>
+          <a href=checkout_shipping.php class="btn btn-orange pull-right">Continue</a> </div>
+
+			</form>
+      </div>        
+        <!-- Sidebar Start-->
+        <div class="col-lg-3 col-md-3 col-xs-12 col-sm-12 span3">
+          <aside>
+            <div class="sidewidt">
+              <h2 class="heading2"><span><i class="icon-list-ol"></i> Checkout Steps</span></h2>
+              <ul class="nav nav-list categories">
+                <li>
+                  <a class="active" href="#">Billing & Shipping Details</a>
+                </li>
+                <li>
+                  <a href="#">Delivery Method</a>
+                </li>                
+                <li>
+                  <a href="#"> Payment Method</a>
+                </li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+        <!-- Sidebar End-->
+      </div>
+    </div>
+  </section>
+</div>
+<?
+	include _BASE_DIR ."/include/inc_bottom.php";
+?>

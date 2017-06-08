@@ -1,0 +1,184 @@
+<?
+	// 기본 설정 파일모음
+	include "../../include/inc_base.php";
+
+	/**
+	* 접근권한 설정
+	**/
+	include "../../include/inc_admin_session.php";
+
+
+	$tableName = "chan_shop_statetax";
+
+	if($_GET['mode'] == "del")
+	{
+		$no = $_GET['no'];
+
+		$qry1 = "delete from chan_shop_statetax where seq_no = '$no'";
+		$rst1 = mysql_query($qry1,$dbConn);
+
+
+		Misc::jvAlert("Completed!","location.replace('setup_tax.php?area=$area')");
+		exit;
+
+	}
+
+	if($_POST['mode'] == "save")
+	{
+		$state = $_POST['state'];
+		$special_tax = $_POST['special_tax'];
+
+		$pre_qry1 = "select * from $tableName where state = '$state'";
+		$pre_rst1 = mysql_query($pre_qry1,$dbConn);
+		$pre_num1 = mysql_affected_rows();
+
+		if($pre_num1>0)
+		{
+			Misc::jvAlert("Already input.!","history.go(-1)");
+			exit;
+		}
+
+		$qry1 = "insert into $tableName values ('','$state','$special_tax')";
+		$rst1 = mysql_query($qry1,$dbConn);
+
+		if($rst1)
+		{
+			Misc::jvAlert("Completed!","location.replace('setup_tax.php?area=$area')");
+			exit;
+		}
+	}
+
+	function printStatetax(){
+		
+		global $dbConn,$tableName,$area;
+
+		$qry1 = "select * from $tableName order by state asc";
+		$rst1 = mysql_query($qry1,$dbConn);
+
+		while($row1 = mysql_fetch_assoc($rst1)){
+			
+			$tax = number_format($row1[tax],2);
+
+			echo "
+			<tr bgcolor='#FFFFFF'>
+				<td width=200 height=25 align=center height=30>$row1[state]</td>
+				<td>&nbsp;$tax %</td>
+				<td align=center><a href=\"javascript:category_del('$row1[seq_no]','$area')\">D</a></td>
+			</tr>";
+
+		}
+
+	}
+
+	include _BASE_DIR . "/admin/inc_top.php";
+?>
+<script>
+	function category_del(no,area){
+		answer = confirm("Delete?");
+
+		if(answer == true)
+		{
+			location.replace('setup_tax.php?mode=del&no=' + no + '&area=' + area);
+			exit;
+		}
+		else return;
+	}
+</script>
+<table width=100% align=center border=0 cellspacing=0>
+	<tr>
+		<td height=28>&nbsp;&nbsp;>> Tax Manager</td>
+	</tr>
+	<tr><td height=1 bgcolor='#008080'></td></tr>
+</table>
+<br>
+<table width=100% align=center border=0 cellspacing=1 bgcolor='#a9a9a9'>
+	<tr bgcolor='#FFFFFF'>
+		<td colspan=3 align=left height=25 bgcolor=#eee8aa>&nbsp;&nbsp;<b>TAX setup</b></td>
+	</tr>
+<script>
+	function chk(tf){
+		if(!tf.special_tax.value)
+		{
+			alert('Enter your tax rate!');
+			tf.special_tax.focus();
+			return false;
+		}
+	return true;
+	}
+
+</script>
+<form action=<?= $_SERVER['PHP_SELF'] ?> name=regi method=post Enctype="multipart/form-data" onSubmit="return chk(this)">
+<input type=hidden name=mode value="save">
+<input type=hidden name=area value="<?= $area ?>">
+	<tr bgcolor='#FFFFFF'>
+		<td width=20% height=25 align=center height=30><font color=blue>Base Sales Tax</font></td>
+		<td width=60%>&nbsp;<b><?= $base_info[tax_base_sales] ?> %</b></td>
+		<td width=20% align=center>Func</td>
+	</tr>
+	<? printStatetax(); ?>
+</table>
+<br>
+<table width=100% align=center border=0 cellspacing=1 bgcolor='#a9a9a9'>
+	<tr bgcolor='#FFFFFF' height=30>
+		<td width=200 height=28 align=center>Special Tax Add</td>
+		<td>&nbsp;<select name="state" length="1">
+<option label="Alabama" value="AL">Alabama</option>
+<option label="Alaska" value="AK">Alaska</option>
+<option label="Arizona" value="AZ">Arizona</option>
+<option label="Arkansas" value="AR">Arkansas</option>
+<option label="California" value="CA">California</option>
+<option label="Colorado" value="CO">Colorado</option>
+<option label="Connecticut" value="CT">Connecticut</option>
+<option label="Delaware" value="DE">Delaware</option>
+<option label="Florida" value="FL">Florida</option>
+<option label="Georgia" value="GA">Georgia</option>
+<option label="Hawaii" value="HI">Hawaii</option>
+<option label="Idaho" value="ID">Idaho</option>
+<option label="Illinois" value="IL">Illinois</option>
+<option label="Indiana" value="IN">Indiana</option>
+<option label="Iowa" value="IA">Iowa</option>
+<option label="Kansas" value="KS">Kansas</option>
+<option label="Kentucky" value="KY">Kentucky</option>
+<option label="Louisiana" value="LA">Louisiana</option>
+<option label="Maine" value="ME">Maine</option>
+<option label="Maryland" value="MD">Maryland</option>
+<option label="Massachusetts" value="MA">Massachusetts</option>
+<option label="Michigan" value="MI">Michigan</option>
+<option label="Minnesota" value="MN">Minnesota</option>
+<option label="Mississippi" value="MS">Mississippi</option>
+<option label="Missouri" value="MO">Missouri</option>
+<option label="Montana" value="MT">Montana</option>
+<option label="Nebraska" value="NE">Nebraska</option>
+<option label="Nevada" value="NV">Nevada</option>
+<option label="New Hampshire" value="NH">New Hampshire</option>
+<option label="New Jersey" value="NJ">New Jersey</option>
+<option label="New Mexico" value="NM">New Mexico</option>
+<option label="New York" value="NY">New York</option>
+<option label="North Carolina" value="NC">North Carolina</option>
+<option label="North Dakota" value="ND">North Dakota</option>
+<option label="Ohio" value="OH">Ohio</option>
+<option label="Oklahoma" value="OK">Oklahoma</option>
+<option label="Oregon" value="OR">Oregon</option>
+<option label="Pennsylvania" value="PA">Pennsylvania</option>
+<option label="Rhode Island" value="RI">Rhode Island</option>
+<option label="South Carolina" value="SC">South Carolina</option>
+<option label="South Dakota" value="SD">South Dakota</option>
+<option label="Tennessee" value="TN">Tennessee</option>
+<option label="Texas" value="TX">Texas</option>
+<option label="Utah" value="UT">Utah</option>
+<option label="Vermont" value="VT">Vermont</option>
+<option label="Virginia" value="VA">Virginia</option>
+<option label="Washington" value="WA">Washington</option>
+<option label="West Virginia" value="WV">West Virginia</option>
+<option label="Wisconsin" value="WI">Wisconsin</option>
+<option label="Wyoming" value="WY">Wyoming</option>
+</select>&nbsp;&nbsp;<input type=text name=special_tax size=6>&nbsp;%&nbsp;&nbsp;&nbsp;( EX. 6.78 )</td>
+	</tr>
+	<tr bgcolor='#FFFFFF'>
+		<td colspan=2 align=center height=45><input type=submit value="Special Tax Add"></td>
+	</tr></form>
+</table>
+
+<?
+	include _BASE_DIR . "/admin/inc_bottom.php";
+?>
